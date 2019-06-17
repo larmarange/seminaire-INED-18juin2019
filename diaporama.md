@@ -459,7 +459,7 @@ Nouvelles géométries (sucettes)
 Nouvelles géométrie (haltères)
 =======================================================
 
-`geom_dumbbell` de l'extension **ggpirate**.
+`geom_dumbbell` de l'extension **ggalt**.
 
 ![plot of chunk unnamed-chunk-42](diaporama-figure/unnamed-chunk-42-1.png)
 

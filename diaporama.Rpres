@@ -619,7 +619,7 @@ gg
 Nouvelles géométrie (haltères)
 =======================================================
 
-`geom_dumbbell` de l'extension **ggpirate**.
+`geom_dumbbell` de l'extension **ggalt**.
 
 ```{r echo=FALSE}
 library(dplyr)
