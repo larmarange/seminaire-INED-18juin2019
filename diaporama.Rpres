@@ -1,0 +1,746 @@
+ggplot2 ou la grammaire des graphiques sous R
+========================================================
+author: Joseph Larmarange, Ceped IRD
+date: Rencontres de statistiques appliquées, Ined, 18 juin 2018
+autosize: true
+css: custom.css
+
+```{r setup, include=FALSE}
+opts_chunk$set(cache=TRUE, dpi=300)
+```
+
+R
+========================================================
+
+- logiciel libre et gratuit
+- multi-plateforme (Windows, MacOS, Linux)
+- nombreuses fonctions d'import et d'export des données
+- développement très actif (plus de 10 000 extensions)
+- de plus en plus utilisé dans la communauté scientifique
+- interface graphique la plus commune : **RStudio**
+- rapports automatisés avec **Rmarkdown**
+- interfaçage possible avec bases SQL
+- serveurs de calcul en ligne (cf. <https://r-tools.huma-num.fr>)
+
+
+R et les graphiques
+=========================================================
+
+**R** dispose d'un puissant moteur graphique interne.
+
+Exemples en ligne : <https://www.r-graph-gallery.com/>
+
+**Fonctions graphiques de base :**
+
+- permettent de dessiner dans un graphique (ajout de points, segments, étiquettes...)
+- mais fonctions peu intuitives
+- la production d'un graphique complet nécessitent pas mal d'étapes et de codes
+
+R et les graphiques (suite)
+=========================================================
+
+Heureusement, il existe de nombreuses extensions graphiques pour **R**, dont (liste non exhaustive)
+
+- **lattice**, particulièrement adapté à la visualisation de panels et de séries temporelles
+- **circlize** pour les visualisations circulaires
+- **igraph** ou **DiagrammeR** pour les réseaux
+- **LexisPlotR** pour les diagramme de Lexis
+
+ggplot2
+========================================================
+type: sub-section
+
+- extension développée par Hadley Wickham
+- met en œuvre la grammaire des graphiques théorisée par Leland Wilkinson
+- est devenue en quelques années l’une des extensions R les plus utilisées
+- appartient au **tidyverse**, un ensemble d'extensions dédiées à l'analyse de données
+
+Le tidyverse
+========================================================
+
+<img src="images/tidyverse.png" style="max-height: 80vh;" />
+
+
+Données tidy
+========================================================
+
+Le concept de tidy data repose sur trois règles interdépendantes. Des données sont considérées comme tidy si :
+
+1. chaque ligne correspond à une observation
+2. chaque colonne correspond à une variable
+3. chaque valeur est présente dans une unique case de la table ou, de manière équivalente, si des unités d’observations différentes sont présentes dans des tables différentes
+
+Exemples de données non tidy
+========================================================
+
+```{r echo=FALSE, paged.print=FALSE, warning=FALSE}
+library(knitr)
+library(tidyverse)
+library(gapminder)
+data(gapminder)
+d <- gapminder
+dm <- d %>% 
+  filter(country %in% c("France", "Germany", "Belgium"),
+         year >= 1992) %>%
+  select(pays = country, year, pop) %>% 
+  spread(year, pop)
+kable(dm)
+```
+
+Les mêmes données au format tidy
+============================================
+
+```{r echo=FALSE, warning=FALSE, paged.print=FALSE}
+d <- dm %>% 
+  gather(annee, population, -pays) %>% 
+  mutate(annee = as.numeric(annee))
+kable(d)
+```
+
+Grammaire des graphiques
+========================================================
+
+La **grammaire des graphiques** invite l’utilisateur à repenser sa manière de concevoir un graphique en associant variables (données), paramètres graphiques (esthétiques) et formes géométriques, puis en complexifiant progressivement son graphique (coordonnées, échelles, facettes, étiquettes, légendes, thèmes…).
+
+***
+
+![grammaire des graphiques](images/ggplot-grammar-of-graphics.png)
+
+Un premier exemple
+========================================================
+type: sub-section
+
+```{r include=FALSE}
+library(questionr)
+data(rp99)
+rp99$commune.ouvriere <- "non"
+rp99$commune.ouvriere[rp99$ouvr > 25] <- "oui"
+rp99$commune.ouvriere <- factor(rp99$commune.ouvriere)
+```
+
+Présentation des données
+======================================================
+
+<small>Extrait des données du recensement français de 1999.<br />
+Une ligne par commune du département du Rhônes.</small>
+
+```{r echo=FALSE}
+knitr::kable(rp99[1:5, c("nom", "tx.chom", "dipl.aucun", "pop.tot", "commune.ouvriere")])
+```
+
+<small>**Variables :** taux de chômage, proportion de la population adulte n'ayant aucun diplôme, population totale, commune considérée comme ouvrière (si plus d'un quart de la population active est ouvrière).</small>
+
+Un nuage de points
+========================================================
+
+<small>A minima, **ggplot2** nécessite : (i) des *données* ; (ii) l'association entre des *variables* et des *esthétiques* et (iii) une *géométrie*.</small>
+
+```{r}
+library(ggplot2)
+p <- ggplot(rp99) +
+  aes(x = dipl.aucun, y = tx.chom) +
+  geom_point()
+```
+
+<small>A noter : **ggplot2** repose sur une syntaxe additive.</small>
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Ajouter des esthétiques
+========================================================
+
+```{r}
+p <- ggplot(rp99) +
+  aes(x = dipl.aucun, y = tx.chom, colour = commune.ouvriere, size = pop.tot) +
+  geom_point(alpha = .5)
+```
+
+<small>**Note :** il est possible de fixer la valeur d'une *esthétique* non assiciée à une variable, lors de l'appel à une *géométrie*.</small>
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Ajouter une géométrie
+========================================================
+
+```{r}
+p <- ggplot(rp99) +
+  aes(x = dipl.aucun, y = tx.chom, colour = commune.ouvriere, size = pop.tot) +
+  geom_smooth(method = "lm", show.legend = FALSE) +
+  geom_point(alpha = .5)
+```
+
+<small>**Note :** certaines *géométries* sont associées à une *statistique*. Nous y reviendrons plus tard.</small>
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+
+Une question d'échelles
+========================================================
+
+<small>Les *échelles* permettent de contrôler le rendu des *esthétiques*.</small>
+
+```{r}
+p <- p +
+  scale_x_continuous(limits = c(0, 45)) +
+  scale_y_continuous(breaks = c(0, 10, 15, 20, 25)) +
+  scale_color_brewer(palette = "Set1") +
+  scale_size_area()
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Forcer un système de coordonnées
+========================================================
+
+```{r}
+p <- p +
+  coord_equal()
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+
+
+Personnaliser les étiquettes
+========================================================
+
+```{r}
+p <- p +
+  ggtitle("Lien entre taux de chômage et éducation", subtitle = "Département du Rhônes, 1999") +
+  xlab("Proportion des actifs sans diplôme") +
+  ylab("Taux de chômage") +
+  labs(size = "Population totale", colour = "Commune ouvrière ?")
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+
+
+Changer le thème graphique
+========================================================
+
+```{r}
+library(hrbrthemes)
+p <- p +
+  theme_ipsum_rc() +
+  theme(
+    legend.position = "bottom", 
+    legend.box = "vertical"
+  )
+```
+
+<small>**Note :** certaines extensions comme **hrbrthemes** étendent **ggplot2** en proposant, par exemple, des thèmes additionnels.</small>
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Un second exemple
+========================================================
+type: sub-section
+
+Les données sont issues d'un sous-échantillon de l'enquête *Histoire de vie* 2003 de l'Insee.
+
+```{r include=FALSE}
+data(hdv2003)
+## Recodage de hdv2003$qualif en hdv2003$csp
+hdv2003$csp <- fct_recode(hdv2003$qualif,
+  "Ouvrier" = "Ouvrier specialise",
+  "Ouvrier" = "Ouvrier qualifie"
+)
+hdv2003 <- hdv2003[!is.na(hdv2003$csp),]
+
+hdv2003$groupe_ages <- cut(hdv2003$age,
+  include.lowest = TRUE,
+  right = FALSE,
+  breaks = c(-Inf, 35, 60, Inf)
+)
+levels(hdv2003$groupe_ages) <- c("18-34", "35-59", "60 et plus")
+```
+
+Un diagramme en barres
+=======================================================
+
+```{r}
+library(hrbrthemes)
+p <- ggplot(hdv2003) +
+  aes(x = csp) +
+  geom_bar()
+```
+
+<small>**Note :** par défaut, la *géométrie* `geom_bar()` appelle la *statistique* `stat_count()`, qui calcule les effectifs de chaque sous-groupe, et les associe à l'<em>esthétique</em> `y`.</small>
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Barres cumulées
+=======================================================
+
+```{r}
+p <- ggplot(hdv2003) +
+  aes(x = csp, fill = sport) +
+  geom_bar()
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+
+Jouer avec la position
+=======================================================
+
+```{r}
+p <- ggplot(hdv2003) +
+  aes(x = csp, fill = sport) +
+  geom_bar(position = "dodge")
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+
+Jouer avec la position (suite)
+=======================================================
+
+```{r}
+p <- ggplot(hdv2003) +
+  aes(x = csp, fill = sport) +
+  geom_bar(position = "fill")
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Pourcentages sur l'axe
+=======================================================
+
+```{r}
+library(scales)
+p <- p +
+  scale_y_continuous(label = percent)
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Stratifier par sous-groupe
+=======================================================
+
+```{r}
+p <- p +
+  facet_grid(sexe ~ groupe_ages)
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Barres horizontales (plus lisibles)
+=======================================================
+
+```{r}
+p <- p +
+  coord_flip()
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Indiquer les effectifs
+=======================================================
+
+```{r}
+p <- p +
+  geom_text(
+    aes(label = ..count..), 
+    stat = "count", 
+    position = position_fill(.5)
+  )
+```
+
+***
+
+```{r echo=FALSE}
+p
+```
+
+Combiner plusieurs graphiques
+========================================================
+
+```{r}
+p1 <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+p2 <- ggplot(mtcars, aes(factor(cyl))) + geom_bar()
+p3 <- ggplot(mtcars, aes(factor(cyl), mpg)) + geom_violin()
+p4 <- ggplot(mtcars, aes(factor(cyl), mpg)) + geom_boxplot()
+```
+
+```{r, eval = FALSE}
+library(cowplot)
+plot_grid(
+  p1, p2, p3, p4, 
+  ncol = 2,
+  align = "hv", 
+  rel_heights = c(2, 1), 
+  rel_widths = c(1, 2)
+)
+```
+
+***
+
+```{r echo=FALSE}
+library(cowplot)
+plot_grid(p1, p2, p3, p4, align = "hv", rel_heights = c(2, 1), 
+  rel_widths = c(1, 2))
+```
+
+
+Exporter un graphique ggplot
+========================================================
+
+
+```{r eval=FALSE}
+ggsave("mon_graphique.pdf", plot = p, width = 11, height = 8, units = "cm")
+```
+
+<small>
+
+**Formats d'export:**
+
+- PNG, JPEG, BMP
+- TIFF, EPS
+- SVG, PDF
+
+</small>
+
+Exemples de graphiques avancés
+========================================================
+type: sub-section
+
+
+Un graphique circulaire
+========================================================
+
+```{r, echo=FALSE}
+# Source: https://www.r-graph-gallery.com/297-circular-barplot-with-groups/
+
+# library
+library(tidyverse)
+
+# Create dataset
+data=data.frame(
+  individual=paste( "Mister ", seq(1,60), sep=""),
+  group=c( rep('A', 10), rep('B', 30), rep('C', 14), rep('D', 6)) ,
+  value=sample( seq(10,100), 60, replace=T)
+)
+
+# Set a number of 'empty bar' to add at the end of each group
+empty_bar=3
+to_add = data.frame( matrix(NA, empty_bar*nlevels(data$group), ncol(data)) )
+colnames(to_add) = colnames(data)
+to_add$group=rep(levels(data$group), each=empty_bar)
+data=rbind(data, to_add)
+data=data %>% arrange(group)
+data$id=seq(1, nrow(data))
+
+# Get the name and the y position of each label
+label_data=data
+number_of_bar=nrow(label_data)
+angle= 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+label_data$hjust<-ifelse( angle < -90, 1, 0)
+label_data$angle<-ifelse(angle < -90, angle+180, angle)
+
+# prepare a data frame for base lines
+base_data=data %>% 
+  group_by(group) %>% 
+  summarize(start=min(id), end=max(id) - empty_bar) %>% 
+  rowwise() %>% 
+  mutate(title=mean(c(start, end)))
+
+# prepare a data frame for grid (scales)
+grid_data = base_data
+grid_data$end = grid_data$end[ c( nrow(grid_data), 1:nrow(grid_data)-1)] + 1
+grid_data$start = grid_data$start - 1
+grid_data=grid_data[-1,]
+
+# Make the plot
+p = ggplot(data, aes(x=as.factor(id), y=value, fill=group)) +       # Note that id is a factor. If x is numeric, there is some space between the first bar
+  
+  geom_bar(aes(x=as.factor(id), y=value, fill=group), stat="identity", alpha=0.5) +
+  
+  # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
+  geom_segment(data=grid_data, aes(x = end, y = 80, xend = start, yend = 80), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 60, xend = start, yend = 60), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 40, xend = start, yend = 40), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 20, xend = start, yend = 20), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  
+  # Add text showing the value of each 100/75/50/25 lines
+  annotate("text", x = rep(max(data$id),4), y = c(20, 40, 60, 80), label = c("20", "40", "60", "80") , color="grey", size=3 , angle=0, fontface="bold", hjust=1) +
+  
+  geom_bar(aes(x=as.factor(id), y=value, fill=group), stat="identity", alpha=0.5) +
+  ylim(-100,120) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-1,4), "cm") 
+  ) +
+  coord_polar() + 
+  geom_text(data=label_data, aes(x=id, y=value+10, label=individual, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) +
+  
+  # Add base line information
+  geom_segment(data=base_data, aes(x = start, y = -5, xend = end, yend = -5), colour = "black", alpha=0.8, size=0.6 , inherit.aes = FALSE )  +
+  geom_text(data=base_data, aes(x = title, y = -18, label=group), hjust=c(1,1,0,0), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
+
+p
+```
+
+Carte
+========================================================
+
+![carte](images/carte.png)
+
+<small>Source : <https://www.r-graph-gallery.com/327-chloropleth-map-from-geojson-with-ggplot2/></small>
+
+Étendre ggplot2
+========================================================
+type: sub-section
+
+Il existe un grand nombre d'extensions disponibles permettant d'étendre les possibilités de **ggplot2**.
+
+Nouvelles géométries (sucettes)
+=======================================================
+
+`geom_lollipop` de l'extension **ggalt**.
+
+```{r echo=FALSE}
+df <- read.csv(text="category,pct
+Other,0.09
+South Asian/South Asian Americans,0.12
+Interngenerational/Generational,0.21
+S Asian/Asian Americans,0.25
+Muslim Observance,0.29
+Africa/Pan Africa/African Americans,0.34
+Gender Equity,0.34
+Disability Advocacy,0.49
+European/European Americans,0.52
+Veteran,0.54
+Pacific Islander/Pacific Islander Americans,0.59
+Non-Traditional Students,0.61
+Religious Equity,0.64
+Caribbean/Caribbean Americans,0.67
+Latino/Latina,0.69
+Middle Eastern Heritages and Traditions,0.73
+Trans-racial Adoptee/Parent,0.76
+LBGTQ/Ally,0.79
+Mixed Race,0.80
+Jewish Heritage/Observance,0.85
+International Students,0.87", stringsAsFactors=FALSE, sep=",", header=TRUE)
+ 
+library(ggplot2)
+library(ggalt)
+library(scales)
+## 
+## Attaching package: 'scales'
+## The following object is masked from 'package:purrr':
+## 
+##     discard
+## The following object is masked from 'package:readr':
+## 
+##     col_factor
+ 
+gg <- ggplot(df, aes(y=reorder(category, pct), x=pct))
+gg <- gg + geom_lollipop(point.colour="steelblue", point.size=2, horizontal=TRUE)
+gg <- gg + scale_x_continuous(expand=c(0,0), labels=percent,
+                              breaks=seq(0, 1, by=0.2), limits=c(0, 1))
+gg <- gg + labs(x=NULL, y=NULL, 
+                title="SUNY Cortland Multicultural Alumni survey results",
+                subtitle="Ranked by race, ethnicity, home land and orientation\namong the top areas of concern",
+                caption="Data from http://stephanieevergreen.com/lollipop/")
+gg <- gg + theme_minimal(base_family="Arial Narrow")
+gg <- gg + theme(panel.grid.major.y=element_blank())
+gg <- gg + theme(panel.grid.minor=element_blank())
+gg <- gg + theme(axis.line.y=element_line(color="#2b2b2b", size=0.15))
+gg <- gg + theme(axis.text.y=element_text(margin=margin(r=0, l=0)))
+gg <- gg + theme(plot.margin=unit(rep(30, 4), "pt"))
+gg <- gg + theme(plot.title=element_text(face="bold"))
+gg <- gg + theme(plot.subtitle=element_text(margin=margin(b=10)))
+gg <- gg + theme(plot.caption=element_text(size=8, margin=margin(t=10)))
+gg
+```
+
+Nouvelles géométrie (haltères)
+=======================================================
+
+`geom_dumbbell` de l'extension **ggpirate**.
+
+```{r echo=FALSE}
+library(dplyr)
+library(tidyr)
+library(scales)
+library(ggplot2)
+library(ggalt) # devtools::install_github("hrbrmstr/ggalt")
+
+health <- read.csv("https://rud.is/dl/zhealth.csv", stringsAsFactors=FALSE, 
+                   header=FALSE, col.names=c("pct", "area_id"))
+
+areas <- read.csv("https://rud.is/dl/zarea_trans.csv", stringsAsFactors=FALSE, header=TRUE)
+
+health %>% 
+  mutate(area_id=trunc(area_id)) %>% 
+  arrange(area_id, pct) %>% 
+  mutate(year=rep(c("2014", "2013"), 26),
+         pct=pct/100) %>% 
+  left_join(areas, "area_id") %>% 
+  mutate(area_name=factor(area_name, levels=unique(area_name))) -> health
+
+setNames(bind_cols(filter(health, year==2014), filter(health, year==2013))[,c(4,1,5)],
+         c("area_name", "pct_2014", "pct_2013")) -> health
+
+gg <- ggplot(health, aes(x=pct_2014, xend=pct_2013, y=area_name, group=area_name))
+gg <- gg + geom_dumbbell(colour="#a3c4dc", size=1.5, colour_xend="#0e668b", 
+                         dot_guide=TRUE, dot_guide_size=0.15)
+gg <- gg + scale_x_continuous(label=percent)
+gg <- gg + labs(x=NULL, y=NULL)
+gg <- gg + theme_bw()
+gg <- gg + theme(plot.background=element_rect(fill="#f7f7f7"))
+gg <- gg + theme(panel.background=element_rect(fill="#f7f7f7"))
+gg <- gg + theme(panel.grid.minor=element_blank())
+gg <- gg + theme(panel.grid.major.y=element_blank())
+gg <- gg + theme(panel.grid.major.x=element_line())
+gg <- gg + theme(axis.ticks=element_blank())
+gg <- gg + theme(legend.position="top")
+gg <- gg + theme(panel.border=element_blank())
+gg
+```
+
+Nouvelles géométrie (pirates)
+=======================================================
+
+`geom_pirate` de l'extension **ggpirate**.
+
+```{r echo=FALSE}
+library(ggplot2)
+library(ggpirate)
+ggplot(mpg, aes(x = class, y = cty)) + geom_pirate(aes(colour = class, 
+  fill = class)) + theme_bw()
+```
+
+Graphiques interactifs
+========================================================
+
+```{r, eval = FALSE}
+p <- ggplot(iris) + aes(x = Petal.Width, y = Sepal.Length, color = Species) + 
+  geom_point()
+library(plotly)
+ggplotly(p)
+```
+
+Pour voir le rendu : <https://larmarange.github.io/seminaire-INED-18juin2019/exemple_graphique_interactif.html>
+
+***
+
+```{r, echo = FALSE}
+p <- ggplot(iris) + 
+  aes(x = Petal.Width, y = Sepal.Length, color = Species) + 
+  geom_point()
+library(plotly)
+ggplotly(p)
+```
+
+Graphiques animés
+=========================================
+
+```{r eval=FALSE}
+library(gganimate)
+library(gapminder)
+
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + scale_colour_manual(values = country_colors) + 
+  scale_size(range = c(2, 12)) + scale_x_log10() + facet_wrap(~continent) + 
+  # Here comes the gganimate specific bits
+labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") + 
+  transition_time(year) + ease_aes("linear")
+```
+
+***
+
+
+```{r echo=FALSE}
+library(gganimate)
+library(gapminder)
+
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) + scale_colour_manual(values = country_colors) + 
+  scale_size(range = c(2, 12)) + scale_x_log10() + facet_wrap(~continent) + 
+  # Here comes the gganimate specific bits
+labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") + 
+  transition_time(year) + ease_aes("linear")
+```
+
+Pour aller plus loin
+========================================================
+type: sub-section
+
+Ressources
+========================================================
+
+- <http://larmarange.github.io/analyse-R/> (cours en français)
+- <https://www.r-graph-gallery.com/> (gallerie de graphiques avec les codes correspondants)
+- l'ouvrage *R Graphics Cookbook* de Winston Chang
+- Chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
+- *Cheat Sheet* : <https://www.rstudio.com/resources/cheatsheets/>
+
+Merci
+==========================================================
+type:section
+
+Retrouvez le code source de ce diaporama sur <https://github.com/larmarange/seminaire-INED-18juin2019>
+

@@ -1,0 +1,16 @@
+---
+title: "Exemple de graphique interactif"
+author: "Joseph Larmarange"
+date: "18/06/2019"
+output: html_document
+---
+
+```{r message=FALSE}
+library(ggplot2)
+p <- ggplot(iris) + 
+  aes(x = Petal.Width, y = Sepal.Length, color = Species) + 
+  geom_point()
+library(plotly)
+ggplotly(p)
+```
+
