@@ -477,7 +477,7 @@ type: sub-section
 Un graphique circulaire
 ========================================================
 
-```{r, echo=FALSE}
+```{r graph circulaire, echo=FALSE}
 # Source: https://www.r-graph-gallery.com/297-circular-barplot-with-groups/
 
 # library
@@ -489,6 +489,9 @@ data=data.frame(
   group=c( rep('A', 10), rep('B', 30), rep('C', 14), rep('D', 6)) ,
   value=sample( seq(10,100), 60, replace=T)
 )
+
+# Order data:
+data = data %>% arrange(group, value)
 
 # Set a number of 'empty bar' to add at the end of each group
 empty_bar=3
@@ -746,7 +749,7 @@ Ressources
 - <http://larmarange.github.io/analyse-R/> (cours en français)
 - <https://www.r-graph-gallery.com/> (gallerie de graphiques avec les codes correspondants)
 - l'ouvrage *R Graphics Cookbook* de Winston Chang
-- Chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
+- chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
 - *Cheat Sheet* : <https://www.rstudio.com/resources/cheatsheets/>
 
 Merci

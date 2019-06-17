@@ -446,7 +446,7 @@ type: sub-section
 Un graphique circulaire
 ========================================================
 
-![plot of chunk unnamed-chunk-40](diaporama-figure/unnamed-chunk-40-1.png)
+![plot of chunk graph circulaire](diaporama-figure/graph circulaire-1.png)
 
 Carte
 ========================================================
@@ -466,21 +466,21 @@ Nouvelles géométries (sucettes)
 
 <small>`geom_lollipop()` de l'extension **ggalt**.</small>
 
-![plot of chunk unnamed-chunk-41](diaporama-figure/unnamed-chunk-41-1.png)
+![plot of chunk unnamed-chunk-40](diaporama-figure/unnamed-chunk-40-1.png)
 
 Nouvelles géométrie (haltères)
 =======================================================
 
 <small>`geom_dumbbell()` de l'extension **ggalt**.</small>
 
-![plot of chunk unnamed-chunk-42](diaporama-figure/unnamed-chunk-42-1.png)
+![plot of chunk unnamed-chunk-41](diaporama-figure/unnamed-chunk-41-1.png)
 
 Nouvelles géométrie (pirates)
 =======================================================
 
 <small>`geom_pirate()` de l'extension **ggpirate**.</small>
 
-![plot of chunk unnamed-chunk-43](diaporama-figure/unnamed-chunk-43-1.png)
+![plot of chunk unnamed-chunk-42](diaporama-figure/unnamed-chunk-42-1.png)
 
 Graphiques interactifs
 ========================================================
@@ -497,7 +497,7 @@ ggplotly(p)
 
 ***
 
-![plot of chunk unnamed-chunk-45](diaporama-figure/unnamed-chunk-45-1.png)
+![plot of chunk unnamed-chunk-44](diaporama-figure/unnamed-chunk-44-1.png)
 
 Graphiques animés
 =========================================
@@ -518,7 +518,7 @@ labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") 
 ***
 
 
-![plot of chunk unnamed-chunk-47](diaporama-figure/unnamed-chunk-47-1.gif)
+![plot of chunk unnamed-chunk-46](diaporama-figure/unnamed-chunk-46-1.gif)
 
 Pour aller plus loin
 ========================================================
@@ -530,7 +530,7 @@ Ressources
 - <http://larmarange.github.io/analyse-R/> (cours en français)
 - <https://www.r-graph-gallery.com/> (gallerie de graphiques avec les codes correspondants)
 - l'ouvrage *R Graphics Cookbook* de Winston Chang
-- Chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
+- chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
 - *Cheat Sheet* : <https://www.rstudio.com/resources/cheatsheets/>
 
 Merci
