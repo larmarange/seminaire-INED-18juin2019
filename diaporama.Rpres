@@ -5,6 +5,8 @@ date: Rencontres de statistiques appliquées, Ined, 18 juin 2018
 autosize: true
 css: custom.css
 
+[![DOI](https://www.zenodo.org/badge/192342435.svg)](https://www.zenodo.org/badge/latestdoi/192342435)
+
 ```{r setup, include=FALSE}
 opts_chunk$set(cache=TRUE, dpi=300)
 ```

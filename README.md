@@ -1,5 +1,7 @@
 # ggplot2 ou la grammaire des graphiques sous R
 
+[![DOI](https://www.zenodo.org/badge/192342435.svg)](https://www.zenodo.org/badge/latestdoi/192342435)
+
 Communication orale effectuée le 18 juin 2019 à l'Ined dans le cadre des *Rencontres de statistiques appliquées*, session *Visualisation de données : grammaires, pratiques, outils*.
 
 ## Résumé
