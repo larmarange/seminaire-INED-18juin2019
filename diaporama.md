@@ -56,13 +56,15 @@ type: sub-section
 Le tidyverse
 ========================================================
 
-<img src="images/tidyverse.png" style="max-height: 80vh;" />
+<img src="images/tidyverse.png" />
 
 
 Données tidy
 ========================================================
 
-Le concept de tidy data repose sur trois règles interdépendantes. Des données sont considérées comme tidy si :
+Le concept de tidy data repose sur trois règles interdépendantes. 
+
+Des données sont considérées comme tidy si :
 
 1. chaque ligne correspond à une observation
 2. chaque colonne correspond à une variable
@@ -132,7 +134,15 @@ Une ligne par commune du département du Rhônes.</small>
 Un nuage de points
 ========================================================
 
-<small>A minima, **ggplot2** nécessite : (i) des *données* ; (ii) l'association entre des *variables* et des *esthétiques* et (iii) une *géométrie*.</small>
+<small>
+
+A minima, **ggplot2** nécessite : 
+
+1. des *données* ; 
+2. l'association entre des *variables* et des *esthétiques* et
+3. une *géométrie*.
+
+</small>
 
 
 ```r
@@ -452,21 +462,21 @@ Il existe un grand nombre d'extensions disponibles permettant d'étendre les pos
 Nouvelles géométries (sucettes)
 =======================================================
 
-`geom_lollipop` de l'extension **ggalt**.
+<small>`geom_lollipop()` de l'extension **ggalt**.</small>
 
 ![plot of chunk unnamed-chunk-41](diaporama-figure/unnamed-chunk-41-1.png)
 
 Nouvelles géométrie (haltères)
 =======================================================
 
-`geom_dumbbell` de l'extension **ggalt**.
+<small>`geom_dumbbell()` de l'extension **ggalt**.</small>
 
 ![plot of chunk unnamed-chunk-42](diaporama-figure/unnamed-chunk-42-1.png)
 
 Nouvelles géométrie (pirates)
 =======================================================
 
-`geom_pirate` de l'extension **ggpirate**.
+<small>`geom_pirate()` de l'extension **ggpirate**.</small>
 
 ![plot of chunk unnamed-chunk-43](diaporama-figure/unnamed-chunk-43-1.png)
 
@@ -481,7 +491,7 @@ library(plotly)
 ggplotly(p)
 ```
 
-Pour voir le rendu : <https://larmarange.github.io/seminaire-INED-18juin2019/exemple_graphique_interactif.html>
+<small>Pour voir le rendu : <a href="https://larmarange.github.io/seminaire-INED-18juin2019/exemple_graphique_interactif.html" target="_blank">https://larmarange.github.io/seminaire-INED-18juin2019/exemple_graphique_interactif.html</a></small>
 
 ***
 
