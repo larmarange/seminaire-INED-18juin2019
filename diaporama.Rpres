@@ -1,7 +1,7 @@
 ggplot2 ou la grammaire des graphiques sous R
 ========================================================
 author: Joseph Larmarange, Ceped IRD
-date: Rencontres de statistiques appliquées, Ined, 18 juin 2018
+date: Rencontres de statistique appliquée, Ined, 18 juin 2018
 autosize: true
 css: custom.css
 
@@ -36,7 +36,7 @@ Exemples en ligne : <https://www.r-graph-gallery.com/>
 
 - permettent de dessiner dans un graphique (ajout de points, segments, étiquettes...)
 - mais fonctions peu intuitives
-- la production d'un graphique complet nécessitent pas mal d'étapes et de codes
+- la production d'un graphique complet nécessite pas mal d'étapes et de codes
 
 R et les graphiques (suite)
 =========================================================
@@ -66,9 +66,9 @@ Le tidyverse
 Données tidy
 ========================================================
 
-Le concept de tidy data repose sur trois règles interdépendantes. 
+Le concept de *tidy data* repose sur trois règles interdépendantes. 
 
-Des données sont considérées comme tidy si :
+Des données sont considérées comme *tidy* si :
 
 1. chaque ligne correspond à une observation
 2. chaque colonne correspond à une variable
@@ -137,16 +137,6 @@ knitr::kable(rp99[1:5, c("nom", "tx.chom", "dipl.aucun", "pop.tot", "commune.ouv
 Un nuage de points
 ========================================================
 
-<small>
-
-A minima, **ggplot2** nécessite : 
-
-1. des *données* ; 
-2. l'association entre des *variables* et des *esthétiques* et
-3. une *géométrie*.
-
-</small>
-
 ```{r}
 library(ggplot2)
 p <- ggplot(rp99) +
@@ -154,7 +144,13 @@ p <- ggplot(rp99) +
   geom_point()
 ```
 
-<small>A noter : **ggplot2** repose sur une syntaxe additive.</small>
+<small>
+A minima, **ggplot2** nécessite : <br />
+(i) des *données* ;<br /> 
+(ii) l'association entre des *variables* et des *esthétiques*<br />
+(iii) une *géométrie*.
+
+**Note :** **ggplot2** repose sur une syntaxe additive.</small>
 
 ***
 
@@ -171,7 +167,8 @@ p <- ggplot(rp99) +
   geom_point(alpha = .5)
 ```
 
-<small>**Note :** il est possible de fixer la valeur d'une *esthétique* non assiciée à une variable, lors de l'appel à une *géométrie*.</small>
+<small>**Note :** il est possible de fixer la valeur d'une *esthétique* non associée à une variable, lors de l'appel à une *géométrie*.<br />
+**Note 2:** les variables catégorielles doivent être sous forme de *facteurs*.</small>
 
 ***
 
@@ -189,7 +186,7 @@ p <- ggplot(rp99) +
   geom_point(alpha = .5)
 ```
 
-<small>**Note :** certaines *géométries* sont associées à une *statistique*. Nous y reviendrons plus tard.</small>
+<small>**Note :** les *géométries* sont associées à une *statistique* (ici, à une fonction calculant la droite de régression). Nous y reviendrons plus tard.</small>
 
 ***
 
@@ -206,7 +203,7 @@ Une question d'échelles
 ```{r}
 p <- p +
   scale_x_continuous(limits = c(0, 45)) +
-  scale_y_continuous(breaks = c(0, 10, 15, 20, 25)) +
+  scale_y_continuous(breaks = c(0, 2, 4, 6, 8, 10, 15, 20, 25)) +
   scale_color_brewer(palette = "Set1") +
   scale_size_area()
 ```
@@ -369,6 +366,8 @@ library(scales)
 p <- p +
   scale_y_continuous(label = percent)
 ```
+
+<small>**Note :** voir l'extension **scales** et en particulier la fonction `number_format()` pour la mise en forme des nombres.</small>
 
 ***
 
@@ -716,12 +715,17 @@ Graphiques animés
 library(gganimate)
 library(gapminder)
 
-ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
-  geom_point(alpha = 0.7, show.legend = FALSE) + scale_colour_manual(values = country_colors) + 
-  scale_size(range = c(2, 12)) + scale_x_log10() + facet_wrap(~continent) + 
+ggplot(gapminder) +
+  aes(gdpPercap, lifeExp, size = pop, colour = country)) + 
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) + 
+  scale_size(range = c(2, 12)) + 
+  scale_x_log10() + 
+  facet_wrap(~ continent) + 
   # Here comes the gganimate specific bits
-labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") + 
-  transition_time(year) + ease_aes("linear")
+  labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") + 
+  transition_time(year) + 
+  ease_aes("linear")
 ```
 
 ***
@@ -739,9 +743,6 @@ labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy") 
   transition_time(year) + ease_aes("linear")
 ```
 
-Pour aller plus loin
-========================================================
-type: sub-section
 
 Ressources
 ========================================================
@@ -749,7 +750,7 @@ Ressources
 - <http://larmarange.github.io/analyse-R/> (cours en français)
 - <https://www.r-graph-gallery.com/> (gallerie de graphiques avec les codes correspondants)
 - l'ouvrage *R Graphics Cookbook* de Winston Chang
-- chapitre *Data visualation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
+- chapitre *Data visualisation* dans l'ouvrage *R for data science* de Garrett Grolemund et Hadley Wickham (<https://r4ds.had.co.nz/data-visualisation.html>)
 - *Cheat Sheet* : <https://www.rstudio.com/resources/cheatsheets/>
 
 Merci
